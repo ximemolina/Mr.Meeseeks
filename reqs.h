@@ -35,33 +35,38 @@ int consultarDuración(){
 
 }
 
-void completarTarea(int duracion, int dificultad, int tarea[]){ // retorna 1 si exito, 0 si fallo
+int completarTarea(int duracion, int dificultad, int tarea[], char *request){ // retorna 1 si exito, 0 si fallo
   clock_t comienzo, fin;
   int contProcesos = 0;
   
   comienzo = clock();
   contProcesos++;
-  crearProceso();
-  
-  if(dificultad > 85){
-    sleep(duracion);
-    printf(ANSI_COLOR_CYAN"\n He completado su solicitud, un gusto haberle servido, chao!   (Enviado por:%i , hijo de:%i )\n",getpid(),getppid());
-    fin = clock();
-    tarea[0] = 1;
-    tarea[1] = fin-comienzo;
-    tarea[2] = contProcesos;
-    return; 
+  if(crearProcesoInicial(request)== 0){
+
+    if(dificultad > 85){
+      sleep(duracion);
+      printf(ANSI_COLOR_CYAN"\n He completado su solicitud, un gusto haberle servido, chao!   (Enviado por:%i , hijo de:%i )\n",getpid(),getppid());
+
+      return 0; 
+    }
   }
+  fin = clock();
+ 
+  tarea[0] = 1;
+  tarea[1] = fin-comienzo;
+  tarea[2] = contProcesos;
+  return 1;
 }
 
-void moduloConsultasTextuales(char *request, int tarea[]){
-  completarTarea(consultarDuración(),consultarDificultad(),tarea);
+int moduloConsultasTextuales(char *request, int tarea[]){
+
+  return  completarTarea(consultarDuración(),consultarDificultad(),tarea, request);
 }
 
 //****************Cálculos*******************************************
 void moduloCalculos(char *request){
     if(strstr(request, "AND")!=NULL) {
-        crearProceso();
+        crearProcesoInicial(request);
         printf("\nEstá bien! Voy a hacer un AND\n");
         printf("\nlisto ya termine\n");
         return;

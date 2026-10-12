@@ -1,18 +1,11 @@
 #include "definitions.h"
 
-int crearPipe(){
+int crearProcesoInicial(char *request){
   char write_msg[BUFFER_SIZE];
   char read_msg[BUFFER_SIZE];
-  int fd[2];
-  
-  if(pipe(fd) == -1){
-    fprintf(stderr,"Pipe failed");
-    return 1;
-  }
-  
-}
+  int info[2]; 
 
-void crearProceso(){
+  
   pid_t pid;
   
   pid = fork();
@@ -21,10 +14,11 @@ void crearProceso(){
     fprintf(stderr,"Fork failed");
   }else if(pid == 0){
     printf(ANSI_COLOR_CYAN  "\n   Hi, I'm Mr. Meeseeks! Look at Meeeee. (%i, %i, 1, 1)\n" ,getpid(), getppid() );
+    return 0; // 0 significa que es hijo
   } else{
     wait(NULL);
-    printf("\nListo terminado\n");
+    printf("\nSoy la terminal que creó el primer mr meeseek entonces no me despido\n");
   }
   
-  return;
+  return 1; // 1 significa que es padre
 }

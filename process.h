@@ -1,10 +1,3 @@
-/* process.h: todo el funcionamiento de Box y de los Mr.Meeseeks en un solo archivo.
- *
- * Orden del archivo (cada parte solo usa lo que está antes que ella):
- *   1. Utilidades            4. Módulo B: cálculos       7. Lado de Box
- *   2. Memoria compartida    5. Módulo C: programas
- *   3. Pipes y mensajes      6. Mr.Meeseeks
- */
 #include "definitions.h"
 
 
@@ -44,8 +37,8 @@ void decir(const char *formato, ...) {
     vsnprintf(texto, sizeof texto, formato, args);
     va_end(args);
 
-    printf(ANSI_COLOR_CYAN "[pid %d, ppid %d] %s" ANSI_COLOR_RESET "\n",
-           (int)getpid(), (int)getppid(), texto);
+    printf(ANSI_COLOR_CYAN "%s (Enviado por: %d, hijo de: %d)" ANSI_COLOR_RESET "\n",
+           texto, (int)getpid(), (int)getppid());
     fflush(stdout);
 }
 
@@ -394,8 +387,8 @@ int ejecutarPrograma(const char *comando, int *codigo) {
     if (pid == 0) {                     /* proceso hijo: se convierte en el programa externo */
         signal(SIGPIPE, SIG_DFL);       /* el programa externo no debe heredar el SIG_IGN */
         execvp(argv[0], argv);
-        fprintf(stderr, "[pid %d] no pude ejecutar '%s': %s\n",
-                (int)getpid(), argv[0], strerror(errno));
+        fprintf(stderr, "No pude ejecutar '%s': %s (Enviado por: %d, hijo de: %d)\n",
+                argv[0], strerror(errno), (int)getpid(), (int)getppid());
         _exit(127);                     /* solo se llega aquí si execvp falló */
     }
 
@@ -573,7 +566,7 @@ int esperarSimulado(int down_r, double ms, double *real) {
     double fin = inicio + ms;
     Mensaje mensaje;
 
-    while(1) {
+    for (;;) {
         double resto = fin - ahoraMs();
         if (resto <= 0) break;
 
@@ -945,7 +938,7 @@ int esperarRespuestaOCaos(Compartido *shm, MeeseeksInicial *inicial, double hora
                           Mensaje *respuesta, int *caos) {
     *caos = 0;
 
-    while (1) {
+    for (;;) {
         int timeoutMs = -1;                         /* -1 = esperar sin límite */
 
         if (shm->tiempoMax > 0) {
@@ -961,7 +954,6 @@ int esperarRespuestaOCaos(Compartido *shm, MeeseeksInicial *inicial, double hora
             if (errno == EINTR) continue;
             return 0;
         }
-        if (listos == 0) { *caos = 1; return 0; }
 
         return recibir(inicial->up_r, respuesta) > 0;
     }
@@ -969,7 +961,7 @@ int esperarRespuestaOCaos(Compartido *shm, MeeseeksInicial *inicial, double hora
 
 /* Caos planetario: se termina a todos los Meeseeks de la tarea de una vez */
 void declararCaosPlanetario(Compartido *shm, MeeseeksInicial *inicial) {
-    printf(ANSI_COLOR_RED "\n[Box] CAOS PLANETARIO: pasaron %d s sin resolver la tarea. "
+    printf(ANSI_COLOR_RED "\n CAOS PLANETARIO: pasaron %d s sin resolver la tarea. "
            "Terminando todos los Mr.Meeseeks.\n" ANSI_COLOR_RESET, shm->tiempoMax);
     fflush(stdout);
     kill(-inicial->pid, SIGKILL);                   /* el signo menos = todo el grupo de procesos */

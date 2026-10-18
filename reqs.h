@@ -41,7 +41,7 @@ int completarTarea(int duracion, int dificultad, int tarea[], char *request){ //
   
   comienzo = clock();
   contProcesos++;
-  if(crearProcesoInicial(request)== 0){
+  if(setupProceso(request)== 0){
 
     if(dificultad > 85){
       sleep(duracion);
@@ -53,7 +53,7 @@ int completarTarea(int duracion, int dificultad, int tarea[], char *request){ //
   fin = clock();
  
   tarea[0] = 1;
-  tarea[1] = fin-comienzo;
+  tarea[1] = ((fin-comienzo)*1000 / CLOCKS_PER_SEC)%1000;
   tarea[2] = contProcesos;
   return 1;
 }
@@ -66,7 +66,7 @@ int moduloConsultasTextuales(char *request, int tarea[]){
 //****************Cálculos*******************************************
 void moduloCalculos(char *request){
     if(strstr(request, "AND")!=NULL) {
-        crearProcesoInicial(request);
+        setupProceso(request);
         printf("\nEstá bien! Voy a hacer un AND\n");
         printf("\nlisto ya termine\n");
         return;

@@ -711,6 +711,10 @@ int esperarRespuestaOCaos(Compartido *shm, MeeseeksInicial *inicial, double hora
             if (errno == EINTR) continue;
             return 0;
         }
+        if (listos == 0) {                          /* se acabó el tiempo: caos planetario */
+            *caos = 1;
+            return 0;
+        }
 
         return recibir(inicial->up_r, respuesta) > 0;
     }

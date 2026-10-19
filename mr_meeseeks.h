@@ -251,7 +251,7 @@ void salirSinResponder(Contexto *ctx) {
 void responderYSalir(Contexto *ctx, Mensaje *respuesta) {
     if (ctx->nivel == 1) {
         if (respuesta->tipo == MSG_EXITO)
-            decir("Solicitud completada. La resolvio Mr. Meeseeks (pid %d, ppid %d, N %d, i %d). %s",
+            decir("Logré completar tu solicitud. La resolví yo, Mr. Meeseeks con pid %d, ppid %d, N %d, i %d. %s",
                   respuesta->pid, respuesta->ppid, respuesta->snivel, respuesta->sinst, respuesta->texto);
         else
             decir("No pude cumplir la solicitud: %s", respuesta->texto);
@@ -275,7 +275,7 @@ void atenderCalculo(Contexto *ctx, Mensaje *solicitud, Mensaje *respuesta) {
 
     if (evaluarExpresion(solicitud->texto, &resultado, &error) == 0) {
         respuesta->tipo = MSG_EXITO;
-        snprintf(respuesta->texto, sizeof respuesta->texto, "Resultado: %lld", resultado);
+        snprintf(respuesta->texto, sizeof respuesta->texto, "El resultado de lo que me pediste es: %lld", resultado);
     } else {
         respuesta->tipo = MSG_FALLO;
         snprintf(respuesta->texto, sizeof respuesta->texto, "Error de calculo: %s", error);

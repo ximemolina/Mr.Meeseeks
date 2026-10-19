@@ -12,14 +12,6 @@ void descartarResto(const char *buf) {
     }
 }
 
-void mostrarNiveles(Compartido *shm) {
-    printf("   Mr.Meeseeks por nivel:");
-    for (int i = 1; i < MAX_NIVELES; i++)
-        if (shm->porNivel[i] > 0)
-            printf(" N%d=%d", i, shm->porNivel[i]);
-    printf("\n");
-}
-
 int box(Compartido *shm, Resultado tareas[]) {
     char request[TEXTO_MAX];
     int contTareas = 0;
@@ -53,16 +45,6 @@ int box(Compartido *shm, Resultado tareas[]) {
             moduloConsultasTextuales(request, shm, t);
 
         contTareas++;
-
-        printf(ANSI_COLOR_RESET
-               "\n Tarea %d: %s | %d Mr.Meeseeks | %.2f ms reales "
-               "(sin esperas simuladas)\n",
-               contTareas,
-               t->exito ? "COMPLETADA" : "FALLIDA",
-               t->cantMeeseeks,
-               t->tiempoMs);
-
-        mostrarNiveles(shm);
 
         if (shm->topeAlcanzado)
             printf(" Plan de contingencia activado: se alcanzó el tope "
